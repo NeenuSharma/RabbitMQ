@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Order.API.Messaging;
+using Order.Application.Messaging;
 using Order.Application.Services;
 using Order.Infrastructure.Context;
 using Order.Infrastructure.Repository;
@@ -24,7 +26,7 @@ builder.Services.AddDbContext<OrderDbContext>(options =>
 builder.Services.AddScoped<OrderRepository>();
 builder.Services.AddScoped<OrderService>();
 // Services
-builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<IRabbitMqPublisher, RabbitMqPublisher>(); 
 builder.Services.AddHttpContextAccessor();
 // Swagger
 builder.Services.AddEndpointsApiExplorer();

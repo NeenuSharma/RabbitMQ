@@ -1,9 +1,11 @@
 ﻿using Grpc.Core;
 using Microsoft.AspNetCore.Http;
 using Order.Application.DTOs;
+using Order.Application.Messaging;
 using Order.Domain.Entities;
 using Order.Infrastructure.Repository;
 using Service.Contracts.Protos;
+using Shared.Events.Events;
 
 namespace Order.Application.Services;
 
@@ -12,17 +14,19 @@ public class OrderService
     private readonly ProductGrpcService.ProductGrpcServiceClient _productClient;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly OrderRepository _orderRepository;
+    private readonly IRabbitMqPublisher _publisher;
 
     public OrderService(
-        ProductGrpcService.ProductGrpcServiceClient productClient,
-        IHttpContextAccessor httpContextAccessor,
-        OrderRepository orderRepository)
+     ProductGrpcService.ProductGrpcServiceClient productClient,
+     IHttpContextAccessor httpContextAccessor,
+     OrderRepository orderRepository,
+     IRabbitMqPublisher publisher)
     {
         _productClient = productClient;
         _httpContextAccessor = httpContextAccessor;
         _orderRepository = orderRepository;
+        _publisher = publisher;
     }
-
     public async Task<OrderResponse> CreateOrder(CreateOrderRequest request)
     {
         var token = _httpContextAccessor
@@ -65,7 +69,16 @@ public class OrderService
         };
 
         await _orderRepository.AddAsync(order);
-
+        await _publisher.PublishAsync(
+            new OrderCreatedEvent
+            {
+                OrderId = order.Id,
+                ProductId = product.Id,
+                ProductName = product.Name,
+                Quantity = request.Quantity,
+                TotalAmount = order.TotalAmount,
+                CreatedOn = DateTime.UtcNow
+            });
         return new OrderResponse
         {
             OrderId = order.Id,

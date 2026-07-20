@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -21,6 +21,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.26" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.19.2" />
+    <PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.19.2" />
   </ItemGroup>
@@ -30,6 +31,7 @@
     <ProjectReference Include="..\Order.Infrastructure\Order.Infrastructure.csproj" />
     <ProjectReference Include="..\Order.Shared\Order.Shared.csproj" />
 	  <ProjectReference Include="..\Service.Contracts\Service.Contracts.csproj" />
+	  <ProjectReference Include="..\Shared.Events\Shared.Events.csproj" />
   </ItemGroup>
 
 </Project>
